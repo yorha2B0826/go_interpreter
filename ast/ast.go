@@ -45,22 +45,27 @@ type ExpressionStatement struct {
 	Expression Expression
 }
 
-type IntegerLiteral struct{
+type IntegerLiteral struct {
 	Token token.Token
 	Value int64
 }
 
-type PrefixExpression struct{
-	Token token.Token
+type PrefixExpression struct {
+	Token    token.Token
 	Operator string
-	Right Expression
+	Right    Expression
 }
 
-type InfixExpression struct{
-	Token token.Token
-	Left Expression
+type InfixExpression struct {
+	Token    token.Token
+	Left     Expression
 	Operator string
-	Right Expression
+	Right    Expression
+}
+
+type Boolean struct {
+	Token token.Token
+	Value bool
 }
 
 func (ls *LetStatement) statementNode() {}
@@ -122,12 +127,12 @@ func (es *ExpressionStatement) String() string {
 	return ""
 }
 
-func (il *IntegerLiteral) expressionNode(){}
-func (il *IntegerLiteral) TokenLiteral() string{
+func (il *IntegerLiteral) expressionNode() {}
+func (il *IntegerLiteral) TokenLiteral() string {
 	return il.Token.Literal
 }
 
-func (il *IntegerLiteral) String() string{
+func (il *IntegerLiteral) String() string {
 	return il.Token.Literal
 }
 
@@ -137,7 +142,7 @@ func (pe *PrefixExpression) TokenLiteral() string {
 	return pe.Token.Literal
 }
 
-func (pe *PrefixExpression) String() string{
+func (pe *PrefixExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
@@ -147,13 +152,13 @@ func (pe *PrefixExpression) String() string{
 	return out.String()
 }
 
-func (ie *InfixExpression) expressionNode(){}
+func (ie *InfixExpression) expressionNode() {}
 
 func (ie *InfixExpression) TokenLiteral() string {
 	return ie.Token.Literal
 }
 
-func (ie *InfixExpression) String() string{
+func (ie *InfixExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
@@ -162,6 +167,16 @@ func (ie *InfixExpression) String() string{
 	out.WriteString(ie.Right.String())
 	out.WriteString(")")
 	return out.String()
+}
+
+func (b *Boolean) expressionNode() {}
+
+func (b *Boolean) TokenLiteral() string {
+	return b.Token.Literal
+}
+
+func (b *Boolean) String() string {
+	return b.Token.Literal
 }
 
 func (p *Program) TokenLiteral() string {
