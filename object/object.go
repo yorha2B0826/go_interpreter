@@ -4,61 +4,70 @@ import "fmt"
 
 type ObjectType string
 
+type Error struct {
+	Message string
+}
+
 const (
 	INTEGER_OBJ = "INTEGER"
 	BOOLEAN_OBJ = "BOOLEAN"
 	NULL_OBJ
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
+	ERROR_OBJ        = "ERROR"
 )
 
-type Object interface{
+type Object interface {
 	Type() ObjectType
 	Inspect() string
 }
 
-type Integer struct{
+type Integer struct {
 	Value int64
 }
 
-type Boolean struct{
-	Value bool 
+type Boolean struct {
+	Value bool
 }
 
-type Null struct{
+type Null struct {
 }
 
-type ReturnValue struct{
+type ReturnValue struct {
 	Value Object
 }
 
-func (i *Integer) Inspect() string{
+func (i *Integer) Inspect() string {
 	return fmt.Sprintf("%d", i.Value)
 }
 
-func (i *Integer) Type() ObjectType{
+func (i *Integer) Type() ObjectType {
 	return INTEGER_OBJ
 }
 
-func (b *Boolean) Type() ObjectType{
+func (b *Boolean) Type() ObjectType {
 	return BOOLEAN_OBJ
 }
 
-func (b *Boolean) Inspect() string{
+func (b *Boolean) Inspect() string {
 	return fmt.Sprintf("%t", b.Value)
 }
 
-func (n *Null) Type() ObjectType{
+func (n *Null) Type() ObjectType {
 	return NULL_OBJ
 }
 
-func (n *Null) Inspect() string{
+func (n *Null) Inspect() string {
 	return "null"
 }
 
-func (rv *ReturnValue) Type() ObjectType{
+func (rv *ReturnValue) Type() ObjectType {
 	return RETURN_VALUE_OBJ
 }
 
-func (rv *ReturnValue) Inspect() string{
+func (rv *ReturnValue) Inspect() string {
 	return rv.Value.Inspect()
 }
+
+func (e *Error) Type() ObjectType { return ERROR_OBJ }
+
+func (e *Error) Inspect() string { return "ERROR: " + e.Message }
