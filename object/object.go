@@ -32,6 +32,7 @@ const (
 	BUILTIN_OBJ = "BUILTIN"
 	ARRAY_OBJ = "ARRAY"
 	HASH_OBJ = "HASH"
+	QUOTE_OBJ = "QUOTE"
 )
 
 type Object interface {
@@ -84,6 +85,10 @@ type Hash struct{
 
 type Hashable interface{
 	HashKey() HashKey
+}
+
+type Quote struct{
+	Node ast.Node
 }
 
 func (i *Integer) Inspect() string {
@@ -218,4 +223,12 @@ func (s *String) HashKey() HashKey{
 	h.Write([]byte(s.Value))
 
 	return HashKey{Type: s.Type(), Value: h.Sum64()}
+}
+
+func (q *Quote) Type() ObjectType{
+	return QUOTE_OBJ
+}
+
+func (q *Quote) Inspect() string{
+	return "QUOTE(" + q.Node.String() + ")"
 }
