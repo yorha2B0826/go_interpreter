@@ -93,31 +93,31 @@ type CallExpression struct {
 	Arguments []Expression
 }
 
-type StringLiteral struct{
+type StringLiteral struct {
 	Token token.Token
 	Value string
 }
 
 type ArrayLiteral struct {
-	Token token.Token
+	Token    token.Token
 	Elements []Expression
 }
 
-type IndexExpression struct{
+type IndexExpression struct {
 	Token token.Token
-	Left Expression
+	Left  Expression
 	Index Expression
 }
 
-type HashLiteral struct{
+type HashLiteral struct {
 	Token token.Token
 	Pairs map[Expression]Expression
 }
 
-type MacroLiteral struct{
-	Token token.Token
+type MacroLiteral struct {
+	Token      token.Token
 	Parameters []*Identifier
-	Body *BlockStatement
+	Body       *BlockStatement
 }
 
 func (ls *LetStatement) statementNode() {}
@@ -328,25 +328,25 @@ func (ce *CallExpression) String() string {
 	return out.String()
 }
 
-func (sl *StringLiteral) expressionNode(){}
+func (sl *StringLiteral) expressionNode() {}
 
-func (sl *StringLiteral) TokenLiteral() string{
+func (sl *StringLiteral) TokenLiteral() string {
 	return sl.Token.Literal
 }
 
-func (sl *StringLiteral) String() string{
+func (sl *StringLiteral) String() string {
 	return sl.Token.Literal
 }
 
-func (al *ArrayLiteral) expressionNode(){}
+func (al *ArrayLiteral) expressionNode() {}
 
-func (al *ArrayLiteral) TokenLiteral() string{ return al.Token.Literal}
+func (al *ArrayLiteral) TokenLiteral() string { return al.Token.Literal }
 
-func (al *ArrayLiteral) String() string{
+func (al *ArrayLiteral) String() string {
 	var out bytes.Buffer
 
 	elements := []string{}
-	for _, el := range al.Elements{
+	for _, el := range al.Elements {
 		elements = append(elements, el.String())
 	}
 
@@ -356,13 +356,13 @@ func (al *ArrayLiteral) String() string{
 	return out.String()
 }
 
-func (ie *IndexExpression) expressionNode(){}
+func (ie *IndexExpression) expressionNode() {}
 
-func (ie *IndexExpression) TokenLiteral() string{
+func (ie *IndexExpression) TokenLiteral() string {
 	return ie.Token.Literal
 }
 
-func (ie *IndexExpression) String() string{
+func (ie *IndexExpression) String() string {
 	var out bytes.Buffer
 
 	out.WriteString("(")
@@ -374,17 +374,17 @@ func (ie *IndexExpression) String() string{
 	return out.String()
 }
 
-func (hl *HashLiteral) expressionNode(){}
+func (hl *HashLiteral) expressionNode() {}
 
 func (hl *HashLiteral) TokenLiteral() string {
 	return hl.Token.Literal
 }
 
-func (hl *HashLiteral) String() string{
+func (hl *HashLiteral) String() string {
 	var out bytes.Buffer
 
 	pairs := []string{}
-	for key, value := range hl.Pairs{
+	for key, value := range hl.Pairs {
 		pairs = append(pairs, key.String()+":"+value.String())
 	}
 
@@ -395,11 +395,11 @@ func (hl *HashLiteral) String() string{
 	return out.String()
 }
 
-func (ml *MacroLiteral) expressionNode(){}
+func (ml *MacroLiteral) expressionNode() {}
 
-func (ml *MacroLiteral) TokenLiteral() string{return ml.Token.Literal}
+func (ml *MacroLiteral) TokenLiteral() string { return ml.Token.Literal }
 
-func (ml *MacroLiteral) String() string{
+func (ml *MacroLiteral) String() string {
 	var out bytes.Buffer
 
 	params := []string{}

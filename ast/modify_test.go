@@ -5,13 +5,13 @@ import (
 	"testing"
 )
 
-func TestModify(t *testing.T){
-	one := func() Expression{return &IntegerLiteral{Value: 1}}
-	two := func() Expression{return &IntegerLiteral{Value: 2}}
+func TestModify(t *testing.T) {
+	one := func() Expression { return &IntegerLiteral{Value: 1} }
+	two := func() Expression { return &IntegerLiteral{Value: 2} }
 
-	turnOneIntoTwo := func(node Node) Node{
+	turnOneIntoTwo := func(node Node) Node {
 		integer, ok := node.(*IntegerLiteral)
-		if !ok{
+		if !ok {
 			return node
 		}
 
@@ -23,8 +23,8 @@ func TestModify(t *testing.T){
 		return node
 	}
 
-	tests := []struct{
-		input Node
+	tests := []struct {
+		input    Node
 		expected Node
 	}{
 		{
@@ -114,11 +114,11 @@ func TestModify(t *testing.T){
 			&ArrayLiteral{Elements: []Expression{two(), two()}},
 		},
 	}
-	for _, tt := range tests{
+	for _, tt := range tests {
 		modified := Modify(tt.input, turnOneIntoTwo)
 		equal := reflect.DeepEqual(modified, tt.expected)
 
-		if !equal{
+		if !equal {
 			t.Errorf("not equal. got=%v, want=%v", modified, tt.expected)
 		}
 	}

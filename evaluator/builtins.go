@@ -5,10 +5,10 @@ import (
 	"go_interpreter/object"
 )
 
-var builtins = map[string] *object.Builtin{
+var builtins = map[string]*object.Builtin{
 	"len": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1{
+			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
 			}
 			switch arg := args[0].(type) {
@@ -40,7 +40,7 @@ var builtins = map[string] *object.Builtin{
 	},
 	"last": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1{
+			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
 			}
 
@@ -50,7 +50,7 @@ var builtins = map[string] *object.Builtin{
 			arr := args[0].(*object.Array)
 			length := len(arr.Elements)
 			if length > 0 {
-				return arr.Elements[length - 1]
+				return arr.Elements[length-1]
 			}
 
 			return NULL
@@ -59,7 +59,7 @@ var builtins = map[string] *object.Builtin{
 
 	"rest": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 1{
+			if len(args) != 1 {
 				return newError("wrong number of arguments. got=%d, want=1", len(args))
 			}
 
@@ -69,8 +69,8 @@ var builtins = map[string] *object.Builtin{
 			arr := args[0].(*object.Array)
 			length := len(arr.Elements)
 			if length > 0 {
-				newElements := make([]object.Object, length - 1, length - 1)
-				copy(newElements, arr.Elements[1 : length])
+				newElements := make([]object.Object, length-1, length-1)
+				copy(newElements, arr.Elements[1:length])
 				return &object.Array{Elements: newElements}
 			}
 			return NULL
@@ -79,10 +79,10 @@ var builtins = map[string] *object.Builtin{
 
 	"push": &object.Builtin{
 		Fn: func(args ...object.Object) object.Object {
-			if len(args) != 2{
+			if len(args) != 2 {
 				return newError("wrong number of arguments. got=%d, want=2", len(args))
 			}
-			if args[0].Type() != object.ARRAY_OBJ{
+			if args[0].Type() != object.ARRAY_OBJ {
 				return newError("argument to `push` must be ARRAY, got %s", args[0].Type())
 			}
 

@@ -2,10 +2,10 @@ package ast
 
 type ModifierFunc func(Node) Node
 
-func Modify(node Node, modifier ModifierFunc) Node{
-	switch node := node.(type){
+func Modify(node Node, modifier ModifierFunc) Node {
+	switch node := node.(type) {
 	case *Program:
-		for i, statement := range node.Statements{
+		for i, statement := range node.Statements {
 			node.Statements[i], _ = Modify(statement, modifier).(Statement)
 		}
 	case *ExpressionStatement:
@@ -21,7 +21,7 @@ func Modify(node Node, modifier ModifierFunc) Node{
 	case *IfExpression:
 		node.Condition, _ = Modify(node.Condition, modifier).(Expression)
 		node.Consequence, _ = Modify(node.Consequence, modifier).(*BlockStatement)
-		if node.Alternative != nil{
+		if node.Alternative != nil {
 			node.Alternative, _ = Modify(node.Alternative, modifier).(*BlockStatement)
 		}
 	case *BlockStatement:
@@ -33,7 +33,7 @@ func Modify(node Node, modifier ModifierFunc) Node{
 	case *ReturnStatement:
 		node.ReturnValue, _ = Modify(node.ReturnValue, modifier).(Expression)
 	case *FunctionLiteral:
-		for i, _ := range node.Parameters{
+		for i, _ := range node.Parameters {
 			node.Parameters[i], _ = Modify(node.Parameters[i], modifier).(*Identifier)
 		}
 		node.Body, _ = Modify(node.Body, modifier).(*BlockStatement)
@@ -43,7 +43,7 @@ func Modify(node Node, modifier ModifierFunc) Node{
 		}
 	case *HashLiteral:
 		newPairs := make(map[Expression]Expression)
-		for key, val := range node.Pairs{
+		for key, val := range node.Pairs {
 			newKey, _ := Modify(key, modifier).(Expression)
 			newVal, _ := Modify(val, modifier).(Expression)
 			newPairs[newKey] = newVal

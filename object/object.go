@@ -16,8 +16,8 @@ type Error struct {
 	Message string
 }
 
-type HashKey struct{
-	Type ObjectType
+type HashKey struct {
+	Type  ObjectType
 	Value uint64
 }
 
@@ -27,12 +27,13 @@ const (
 	NULL_OBJ
 	RETURN_VALUE_OBJ = "RETURN_VALUE"
 	ERROR_OBJ        = "ERROR"
-	FUNCTION_OBJ = "FUNCTION"
-	STRING_OBJ = "STRING"
-	BUILTIN_OBJ = "BUILTIN"
-	ARRAY_OBJ = "ARRAY"
-	HASH_OBJ = "HASH"
-	QUOTE_OBJ = "QUOTE"
+	FUNCTION_OBJ     = "FUNCTION"
+	STRING_OBJ       = "STRING"
+	BUILTIN_OBJ      = "BUILTIN"
+	ARRAY_OBJ        = "ARRAY"
+	HASH_OBJ         = "HASH"
+	QUOTE_OBJ        = "QUOTE"
+	MACRO_OBJ        = "MACRO"
 )
 
 type Object interface {
@@ -55,40 +56,45 @@ type ReturnValue struct {
 	Value Object
 }
 
-
-type Function struct{
+type Function struct {
 	Parameters []*ast.Identifier
-	Body *ast.BlockStatement
-	Env *Environment
+	Body       *ast.BlockStatement
+	Env        *Environment
 }
 
-type String struct{
+type String struct {
 	Value string
 }
 
-type Builtin struct{
+type Builtin struct {
 	Fn BuiltinFunction
 }
 
-type Array struct{
+type Array struct {
 	Elements []Object
 }
 
-type HashPair struct{
-	Key Object
+type HashPair struct {
+	Key   Object
 	Value Object
 }
 
-type Hash struct{
+type Hash struct {
 	Pairs map[HashKey]HashPair
 }
 
-type Hashable interface{
+type Hashable interface {
 	HashKey() HashKey
 }
 
-type Quote struct{
+type Quote struct {
 	Node ast.Node
+}
+
+type Macro struct {
+	Parameters []*ast.Identifier
+	Body       *ast.BlockStatement
+	Env        *Environment
 }
 
 func (i *Integer) Inspect() string {
@@ -127,16 +133,15 @@ func (e *Error) Type() ObjectType { return ERROR_OBJ }
 
 func (e *Error) Inspect() string { return "ERROR: " + e.Message }
 
-
 func (f *Function) Type() ObjectType {
 	return FUNCTION_OBJ
 }
 
-func (f *Function) Inspect() string{
+func (f *Function) Inspect() string {
 	var out bytes.Buffer
 
 	params := []string{}
-	for _, p := range f.Parameters{
+	for _, p := range f.Parameters {
 		params = append(params, p.String())
 	}
 
@@ -149,30 +154,30 @@ func (f *Function) Inspect() string{
 	return out.String()
 }
 
-func (s *String) Type() ObjectType{
+func (s *String) Type() ObjectType {
 	return STRING_OBJ
 }
 
-func (s *String) Inspect() string{
+func (s *String) Inspect() string {
 	return s.Value
 }
 
-func (b *Builtin) Type() ObjectType {return BUILTIN_OBJ}
+func (b *Builtin) Type() ObjectType { return BUILTIN_OBJ }
 
 func (b *Builtin) Inspect() string {
 	return "builtin function"
 }
 
-func (ao *Array) Type() ObjectType{
+func (ao *Array) Type() ObjectType {
 	return ARRAY_OBJ
 }
 
-func (ao *Array) Inspect() string{
+func (ao *Array) Inspect() string {
 	var out bytes.Buffer
 
 	elements := []string{}
 
-	for _, e := range ao.Elements{
+	for _, e := range ao.Elements {
 		elements = append(elements, e.Inspect())
 	}
 
@@ -183,15 +188,15 @@ func (ao *Array) Inspect() string{
 	return out.String()
 }
 
-func (h *Hash) Type() ObjectType{
+func (h *Hash) Type() ObjectType {
 	return HASH_OBJ
 }
 
-func (h *Hash) Inspect() string{
+func (h *Hash) Inspect() string {
 	var out bytes.Buffer
 
 	pairs := []string{}
-	for _, pair := range h.Pairs{
+	for _, pair := range h.Pairs {
 		pairs = append(pairs, fmt.Sprintf("%s: %s", pair.Key.Inspect(), pair.Value.Inspect()))
 	}
 	out.WriteString("{")
@@ -201,23 +206,23 @@ func (h *Hash) Inspect() string{
 	return out.String()
 }
 
-func (b *Boolean) HashKey() HashKey{
+func (b *Boolean) HashKey() HashKey {
 	var value uint64
 
-	if b.Value{
+	if b.Value {
 		value = 1
-	}else {
+	} else {
 		value = 0
 	}
 
 	return HashKey{Type: b.Type(), Value: value}
 }
 
-func (i *Integer) HashKey() HashKey{
-	return HashKey{Type: i.Type(), Value:uint64(i.Value)}
+func (i *Integer) HashKey() HashKey {
+	return HashKey{Type: i.Type(), Value: uint64(i.Value)}
 }
 
-func (s *String) HashKey() HashKey{
+func (s *String) HashKey() HashKey {
 	h := fnv.New64a()
 
 	h.Write([]byte(s.Value))
@@ -225,10 +230,30 @@ func (s *String) HashKey() HashKey{
 	return HashKey{Type: s.Type(), Value: h.Sum64()}
 }
 
-func (q *Quote) Type() ObjectType{
+func (q *Quote) Type() ObjectType {
 	return QUOTE_OBJ
 }
 
-func (q *Quote) Inspect() string{
+func (q *Quote) Inspect() string {
 	return "QUOTE(" + q.Node.String() + ")"
+}
+
+func (m *Macro) Type() ObjectType { return MACRO_OBJ }
+
+func (m *Macro) Inspect() string {
+	var out bytes.Buffer
+
+	params := []string{}
+
+	for _, p := range m.Parameters {
+		params = append(params, p.String())
+	}
+
+	out.WriteString("macro")
+	out.WriteString("(")
+	out.WriteString(strings.Join(params, ", "))
+	out.WriteString(") {\n")
+	out.WriteString(m.Body.String())
+	out.WriteString("\n}")
+	return out.String()
 }

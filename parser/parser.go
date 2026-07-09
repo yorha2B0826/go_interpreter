@@ -373,20 +373,20 @@ func (p *Parser) parseCallArguments() []ast.Expression {
 	return args
 }
 
-func (p *Parser) parseStringLiteral() ast.Expression{
+func (p *Parser) parseStringLiteral() ast.Expression {
 	return &ast.StringLiteral{Token: p.curToken, Value: p.curToken.Literal}
 }
 
-func (p *Parser) parseArrayLiteral() ast.Expression{
+func (p *Parser) parseArrayLiteral() ast.Expression {
 	array := &ast.ArrayLiteral{Token: p.curToken}
 
 	array.Elements = p.parseExpressionList(token.RBRACKET)
 	return array
 }
 
-func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression{
+func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression {
 	list := []ast.Expression{}
-	if p.peekTokenIs(end){
+	if p.peekTokenIs(end) {
 		p.nextToken()
 		return list
 	}
@@ -394,42 +394,42 @@ func (p *Parser) parseExpressionList(end token.TokenType) []ast.Expression{
 	p.nextToken()
 	list = append(list, p.parseExpression(LOWEST))
 
-	for p.peekTokenIs(token.COMMA){
+	for p.peekTokenIs(token.COMMA) {
 		p.nextToken()
 		p.nextToken()
 		list = append(list, p.parseExpression(LOWEST))
 	}
 
-	if !p.expectPeek(end){
+	if !p.expectPeek(end) {
 		return nil
 	}
 
 	return list
 }
 
-func(p *Parser) parseIndexExpression(left ast.Expression) ast.Expression{
+func (p *Parser) parseIndexExpression(left ast.Expression) ast.Expression {
 	exp := &ast.IndexExpression{Token: p.curToken, Left: left}
 
 	p.nextToken()
 	exp.Index = p.parseExpression(LOWEST)
 
-	if !p.expectPeek(token.RBRACKET){
+	if !p.expectPeek(token.RBRACKET) {
 		return nil
 	}
 
 	return exp
 }
 
-func (p *Parser) parseHashLiteral() ast.Expression{
+func (p *Parser) parseHashLiteral() ast.Expression {
 	hash := &ast.HashLiteral{Token: p.curToken}
 
 	hash.Pairs = make(map[ast.Expression]ast.Expression)
 
-	for !p.peekTokenIs(token.RBRACE){
+	for !p.peekTokenIs(token.RBRACE) {
 		p.nextToken()
 		key := p.parseExpression(LOWEST)
 
-		if !p.expectPeek(token.COLON){
+		if !p.expectPeek(token.COLON) {
 			return nil
 		}
 
@@ -438,28 +438,28 @@ func (p *Parser) parseHashLiteral() ast.Expression{
 
 		hash.Pairs[key] = value
 
-		if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA){
+		if !p.peekTokenIs(token.RBRACE) && !p.expectPeek(token.COMMA) {
 			return nil
 		}
 	}
 
-	if !p.expectPeek(token.RBRACE){
+	if !p.expectPeek(token.RBRACE) {
 		return nil
 	}
 
 	return hash
 }
 
-func (p *Parser) parseMacroLiteral() ast.Expression{
+func (p *Parser) parseMacroLiteral() ast.Expression {
 	lit := &ast.MacroLiteral{Token: p.curToken}
 
-	if !p.expectPeek(token.LPAREN){
+	if !p.expectPeek(token.LPAREN) {
 		return nil
 	}
 
 	lit.Parameters = p.parseFunctionParameters()
 
-	if !p.expectPeek(token.LBRACE){
+	if !p.expectPeek(token.LBRACE) {
 		return nil
 	}
 
